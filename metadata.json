@@ -1,0 +1,6 @@
+{
+  "name": "Simsim Wedding Planner",
+  "description": "An interactive wedding budget, milestones, registry, and countdown planner with intelligent dynamic progress indicators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

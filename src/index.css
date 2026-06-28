@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #006e1c;
+  --color-primary-container: #4caf50;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #003c0b;
+  --color-background: #fef9f0;
+  --color-surface: #fef9f0;
+  --color-on-background: #1d1c16;
+  --color-on-surface: #1d1c16;
+  --color-surface-container: #f2ede4;
+  --color-surface-container-low: #f8f3ea;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #ece8df;
+  --color-surface-container-highest: #e7e2d9;
+  --color-on-surface-variant: #3f4a3c;
+  --color-secondary: #3c6842;
+  --color-secondary-container: #bdefbe;
+  --color-on-secondary-container: #426e47;
+  --color-tertiary: #675d4d;
+  --color-tertiary-container: #a69a88;
+  --color-on-tertiary-container: #3a3224;
+  --color-outline-variant: #becab9;
+  --color-error: #ca1c1c;
+  --color-error-hover: #b01010;
+  --font-plus: "Cairo", "Plus Jakarta Sans", sans-serif;
+  --animate-bounce-slow: bounce 3s infinite ease-in-out;
+}
+
+/* Custom background patterns from mock designs */
+.turtle-shell-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0l34.64 20v40L40 80 5.36 60V20z' fill='none' stroke='%23006e1c' stroke-width='1' opacity='0.03'/%3E%3Cpath d='M40 10l25.98 15v30L40 70 14.02 55v-30z' fill='none' stroke='%23006e1c' stroke-width='0.5' opacity='0.02'/%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+.quest-path {
+  stroke-dasharray: 10, 15;
+  animation: dashmove 20s linear infinite;
+}
+
+@keyframes dashmove {
+  to {
+    stroke-dashoffset: -250;
+  }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.grain-texture {
+  position: relative;
+}
+
+.grain-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAGNbOL_bM8yBHJcAs3BeXq6Q40F39RWcZpLn6DGkX2mN53QK3R2lWkdgTuVexcKHd80TxxGpL4688J8UNURY87d5icTEgcmwj4sZgCAcpgi_KsRBlPDoy4xo5z8DwoOja416kDUohWF7L1zLbvOKMb5H36HI3O37eYYSUUTDcUB-kprObECJ-3APqFZuuVTtVAxsxkKUz281ysQH3bxmpRVVJa4NsiC8yMfey5LpKZa62qW0vE4MrhejoCWThYEzAdyDAe3j0tKfRD");
+  mix-blend-mode: multiply;
+}
+
+.leaf-dot-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #4caf50;
+  opacity: 0.8;
+}
+
+.leaf-divider::before {
+  content: "•••";
+  letter-spacing: 0.5em;
+  color: #006e1c;
+  opacity: 0.2;
+}
+
+.leaf-divider::after {
+  content: "• • • 🌿 • • •";
+  display: block;
+  text-align: center;
+  color: #006e1c;
+  letter-spacing: 0.2em;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+/* Quick utility variables for font smoothness */
+body {
+  font-family: "Cairo", "Plus Jakarta Sans", "Be Vietnam Pro", sans-serif;
+  color: #1d1c16;
+  background-color: #fef9f0;
+}
