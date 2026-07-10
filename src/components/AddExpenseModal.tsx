@@ -54,7 +54,7 @@ export default function AddExpenseModal({
   const [showHistory, setShowHistory] = useState(false);
 
   const todayRaw = new Date();
-  const [dateStr, setDateStr] = useState<string>(`Today, ${todayRaw.getDate()} ${todayRaw.toLocaleString('default', { month: 'long' })} ${todayRaw.getFullYear()}`);
+  const [dateStr, setDateStr] = useState<string>(todayRaw.toISOString().split('T')[0]);
   const [note, setNote] = useState<string>('');
 
   // Handle clicking save
@@ -78,11 +78,10 @@ export default function AddExpenseModal({
       else if (selectedCategory === 'house_furniture') assignedPhaseId = 'house';
     }
 
-    let isoDate = todayRaw.toISOString().split('T')[0]; // fallback
     onSaveExpense({
       amount: Number(amount),
       category: selectedCategory,
-      date: isoDate,
+      date: dateStr,
       note: note.trim() || undefined,
       phaseId: assignedPhaseId
     });
@@ -246,10 +245,10 @@ export default function AddExpenseModal({
                   <div className="flex-1">
                     <p className="text-[9px] uppercase font-bold text-on-surface-variant/80 tracking-wider">Transaction date</p>
                     <input
-                      type="text"
+                      type="date"
                       value={dateStr}
                       onChange={(e) => setDateStr(e.target.value)}
-                      className="w-full bg-transparent border-none p-0 text-xs font-bold focus:ring-0 text-on-surface focus:outline-none"
+                      className="w-full bg-transparent border-none p-0 text-xs font-bold focus:ring-0 text-on-surface focus:outline-none font-mono"
                     />
                   </div>
                 </div>

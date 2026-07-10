@@ -1,7 +1,7 @@
 import { Expense, Milestone, WishlistItem, WeddingSettings } from './types';
 
 export const DEFAULT_SETTINGS: WeddingSettings = {
-  budgetLimit: 300000,
+  budgetLimit: 305000,
   weddingDate: '2027-06-20', // Pre-fill with a valid date so they have something nice initially (overriding empty)
   partnerName: 'Sarah',
   userName: 'Sami',
@@ -9,7 +9,48 @@ export const DEFAULT_SETTINGS: WeddingSettings = {
   avatarId: 'green',
   activePhaseId: 'shofa',
   phases: [
-    { id: 'shofa', name: 'Shofa', description: 'The foundation of your journey: vision, guests, and initial budgeting' }
+    { 
+      id: 'shofa', 
+      name: 'Shofa', 
+      description: 'The foundation of your journey: vision, guests, and initial budgeting',
+      allocatedBudget: 5000,
+      targetDate: '2026-07-20'
+    },
+    { 
+      id: 'khutba', 
+      name: 'Khutba', 
+      description: 'Engagement, proposal meetings, and personal wardrobe',
+      allocatedBudget: 15000,
+      targetDate: '2026-09-15'
+    },
+    { 
+      id: 'melka', 
+      name: 'Melka', 
+      description: 'Dowry (Mahr) delivery, Shabka jewelry purchase, and official license',
+      allocatedBudget: 75000,
+      targetDate: '2026-12-10'
+    },
+    { 
+      id: 'wedding', 
+      name: 'The Wedding', 
+      description: 'Celebratory hall, photography, catering, and evening guest feast',
+      allocatedBudget: 135500,
+      targetDate: '2027-06-20'
+    },
+    { 
+      id: 'honeymoon', 
+      name: 'Honeymoon', 
+      description: 'Flights, hotel bookings, and post-ceremony travels',
+      allocatedBudget: 19500,
+      targetDate: '2027-07-04'
+    },
+    { 
+      id: 'house', 
+      name: 'The House', 
+      description: 'Appliances, living room layout, and essential home furnishing',
+      allocatedBudget: 55000,
+      targetDate: '2027-08-15'
+    }
   ],
   language: 'en'
 };

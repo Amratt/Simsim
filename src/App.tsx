@@ -52,6 +52,42 @@ export default function App() {
       <OnboardingView 
         onComplete={(onboardedSettings) => {
           const isAr = onboardedSettings.language === 'ar';
+          
+          // Proportional budget distribution logic (precision rounding to sum exactly to budgetLimit)
+          const b = onboardedSettings.budgetLimit;
+          const bShofa = Math.round(b * 0.017);
+          const bKhutba = Math.round(b * 0.05);
+          const bMelka = Math.round(b * 0.25);
+          const bWedding = Math.round(b * 0.45);
+          const bHoneymoon = Math.round(b * 0.065);
+          const bHouse = b - (bShofa + bKhutba + bMelka + bWedding + bHoneymoon);
+
+          // Linear timeline distribution logic relative to today and weddingDate
+          const today = new Date();
+          const wedding = new Date(onboardedSettings.weddingDate);
+          const diffTime = wedding.getTime() - today.getTime();
+          const totalDays = Math.max(30, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+          const formatDate = (d: Date) => d.toISOString().split('T')[0];
+          const getOffsetDate = (days: number) => {
+            const d = new Date();
+            d.setDate(today.getDate() + days);
+            return formatDate(d);
+          };
+
+          const shofaDate = getOffsetDate(Math.round(totalDays * 0.15));
+          const khutbaDate = getOffsetDate(Math.round(totalDays * 0.4));
+          const melkaDate = getOffsetDate(Math.round(totalDays * 0.7));
+          const weddingDateStr = onboardedSettings.weddingDate;
+
+          const honeymoonDateObj = new Date(wedding);
+          honeymoonDateObj.setDate(wedding.getDate() + 14);
+          const honeymoonDate = formatDate(honeymoonDateObj);
+
+          const houseDateObj = new Date(wedding);
+          houseDateObj.setDate(wedding.getDate() + 30);
+          const houseDate = formatDate(houseDateObj);
+
           setSettings({
             ...onboardedSettings,
             activePhaseId: 'shofa', // default starter stage
@@ -61,7 +97,54 @@ export default function App() {
                 name: isAr ? 'الشوفة الشرعية' : 'Shofa', 
                 description: isAr 
                   ? 'تأسيس رحلتكم: الرؤية، قائمة الضيوف الأولية، وتقدير الميزانية الأساسية' 
-                  : 'The foundation of your journey: vision, guests, and initial budgeting' 
+                  : 'The foundation of your journey: vision, guests, and initial budgeting',
+                allocatedBudget: bShofa,
+                targetDate: shofaDate
+              },
+              { 
+                id: 'khutba', 
+                name: isAr ? 'الخطوبة' : 'Khutba', 
+                description: isAr 
+                  ? 'اللقاءات الرسمية، حفل الخطوبة، وتجهيز المظهر الخارجي والملابس' 
+                  : 'Engagement, proposal meetings, and personal wardrobe',
+                allocatedBudget: bKhutba,
+                targetDate: khutbaDate
+              },
+              { 
+                id: 'melka', 
+                name: isAr ? 'عقد القران (الملكة)' : 'Melka', 
+                description: isAr 
+                  ? 'تقديم المهر، شراء الشبكة والذهب، وإتمام عقد النكاح الرسمي' 
+                  : 'Dowry (Mahr) delivery, Shabka jewelry purchase, and official license',
+                allocatedBudget: bMelka,
+                targetDate: melkaDate
+              },
+              { 
+                id: 'wedding', 
+                name: isAr ? 'حفل الزفاف' : 'The Wedding', 
+                description: isAr 
+                  ? 'القاعة والضيافة، التصوير، الكوشة، ووجبة عشاء المدعوين' 
+                  : 'Celebratory hall, photography, catering, and evening guest feast',
+                allocatedBudget: bWedding,
+                targetDate: weddingDateStr
+              },
+              { 
+                id: 'honeymoon', 
+                name: isAr ? 'شهر العسل' : 'Honeymoon', 
+                description: isAr 
+                  ? 'حجز الطيران، الفنادق، والرحلات الترفيهية بعد مراسم الزواج' 
+                  : 'Flights, hotel bookings, and post-ceremony travels',
+                allocatedBudget: bHoneymoon,
+                targetDate: honeymoonDate
+              },
+              { 
+                id: 'house', 
+                name: isAr ? 'عش الزوجية' : 'The House', 
+                description: isAr 
+                  ? 'الأجهزة الكهربائية، أثاث المعيشة والغرف، وتجهيز المنزل بالكامل' 
+                  : 'Appliances, living room layout, and essential home furnishing',
+                allocatedBudget: bHouse,
+                targetDate: houseDate
               }
             ],
             isOnboarded: true
