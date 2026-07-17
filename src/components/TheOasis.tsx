@@ -603,12 +603,6 @@ export default function TheOasis({
                   avatarId={settings.avatarId || 'green'} 
                   className="w-16 h-16 relative z-10 drop-shadow-xl animate-bounce-slow" 
                 />
-                
-                {/* Dynamic mascot message bubble popping up on mouse hover / always shown */}
-                <div className="absolute -top-11 left-1/2 -translate-x-1/2 bg-on-surface text-surface px-3 py-1 rounded-lg shadow-lg border border-primary/20 whitespace-nowrap z-40 scale-90 opacity-90 transition-opacity">
-                  <span className="text-[9px] font-black tracking-wider uppercase">{simsimQuote}</span>
-                  <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-2 h-2 bg-on-surface rotate-45" />
-                </div>
               </div>
             </div>
 
