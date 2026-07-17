@@ -151,12 +151,7 @@ export default function TheOasis({
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to the bottom of the container to focus on the starting/active phase
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-    }
-  }, [currentPhases.length]);
+
 
   // Map each phase to its slot coordinate
   const phaseNodes = currentPhases.map((phase, idx) => {
@@ -239,7 +234,13 @@ export default function TheOasis({
     const translatedName = translatePhaseName(activePhase.id, activePhase.name, lang);
     simsimQuote = lang === 'ar' ? `مرحلة ${translatedName}: دعنا نتابع أهدافنا! 💍🐢` : `${translatedName} Stage: Let's track our targets! 💍🐢`;
   }
-
+  // Auto-scroll active phase into view
+  useEffect(() => {
+    const activeCardEl = document.getElementById(`timeline-card-${activePhase?.id}`);
+    if (activeCardEl) {
+      activeCardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [activeIndex, activePhase?.id]);
   // Find node coordinate for active Simsim mascot positioning
   const activeNode = phaseNodes[activeIndex] || phaseNodes[0];
 
@@ -481,194 +482,171 @@ export default function TheOasis({
             </svg>
           </div>
 
-          {/* Desert Path SVG & Floating Cards Container */}
-          <div 
-            className="relative w-full max-w-sm select-none shrink-0 z-10"
-            style={{ height: `${dynamicHeight}px` }}
-          >
-            <svg 
-              className="w-full h-full" 
-              fill="none" 
-              viewBox={`0 0 400 ${dynamicHeight}`} 
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ height: `${dynamicHeight}px` }}
-            >
-              {/* Layer 1: Thick green glow shadow path under everything */}
-              <path 
-                d={getPathString(currentPhases.length, currentPhases.length < 20)} 
-                stroke="rgba(0, 110, 28, 0.04)" 
-                strokeLinecap="round" 
-                strokeWidth="36"
-                className="transition-all duration-500 ease-out"
-              />
+          {/* New Scrapbook Timeline Layout */}
+          <div className="relative w-full py-4 select-none shrink-0 z-10">
+            
+            {/* Center vine stem line running top-to-bottom */}
+            <div 
+              className="absolute left-1/2 -translate-x-1/2 top-4 bottom-4 w-[3px] rounded-full bg-gradient-to-b from-[#b18129] via-[#006e1c] to-[#b18129]/30"
+              style={{ zIndex: 1 }}
+            />
 
-              {/* Layer 2: Main sandy path background - grows dynamically */}
-              <path 
-                d={getPathString(currentPhases.length, currentPhases.length < 20)} 
-                stroke="#EAE6DF" 
-                strokeLinecap="round" 
-                strokeWidth="20"
-                className="transition-all duration-500 ease-out"
-              />
+            <div className="space-y-6 relative">
+              {currentPhases.map((phase, idx) => {
+                const isCompleted = idx < activeIndex;
+                const isActive = idx === activeIndex;
+                const isFuture = idx > activeIndex;
 
-              {/* Layer 3: Subtle golden guide thread along the main road */}
-              <path 
-                d={getPathString(currentPhases.length, currentPhases.length < 20)} 
-                stroke="#b18129" 
-                strokeLinecap="round" 
-                strokeWidth="1.5"
-                strokeDasharray="5 5"
-                className="transition-all duration-500 ease-out opacity-40"
-              />
+                // Spent calculations
+                const phaseExpenses = expenses.filter(e => e.phaseId === phase.id);
+                const spent = phaseExpenses.reduce((sum, e) => sum + e.amount, 0);
+                const budget = phase.allocatedBudget;
+                const percent = budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : 0;
 
-              {/* Progressive active thick forest green trail */}
-              <path 
-                className="quest-path transition-all duration-700 ease-out" 
-                d={getPathString(currentPhases.length, false)} 
-                stroke="#006e1c" 
-                strokeLinecap="round" 
-                strokeWidth="6"
-                style={{
-                  strokeDasharray: '10000',
-                  strokeDashoffset: `${10000 - ((activeIndex + 1) / currentPhases.length) * 10000}`
-                }}
-              />
+                const name = translatePhaseName(phase.id, phase.name, lang);
+                const isLeft = idx % 2 === 0;
 
-              {/* Superimposed active glowing golden dash-line thread */}
-              <path 
-                className="quest-path transition-all duration-700 ease-out" 
-                d={getPathString(currentPhases.length, false)} 
-                stroke="#f1c40f" 
-                strokeLinecap="round" 
-                strokeWidth="1.5"
-                strokeDasharray="6 4"
-                style={{
-                  strokeDasharray: '10000',
-                  strokeDashoffset: `${10000 - ((activeIndex + 1) / currentPhases.length) * 10000}`,
-                  opacity: 0.8
-                }}
-              />
-            </svg>
+                // Click node navigator
+                const handleNodeClick = () => {
+                  setSelectedPhaseDetailId(phase.id);
+                };
 
-            {/* Interactive Milestone Phase stops plotted on top of the winding map */}
-            {phaseNodes.map((node, idx) => {
-              const isCompleted = idx < activeIndex;
-              const isActive = idx === activeIndex;
-              const isFuture = idx > activeIndex;
-
-              // Click node navigator
-              const handleNodeClick = () => {
-                setSelectedPhaseDetailId(node.id);
-              };
-
-              return (
-                <div
-                  key={node.id}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 group z-20 cursor-pointer"
-                  style={{
-                    left: `${(node.x / 400) * 100}%`,
-                    top: `${(node.y / dynamicHeight) * 100}%`,
-                  }}
-                  onClick={handleNodeClick}
-                >
-                  {/* Visual Circle Node Button */}
-                  <div 
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
-                      isCompleted 
-                        ? 'bg-primary border-2 border-amber-500/25 text-white hover:scale-110 shadow-primary/10'
-                        : isActive
-                          ? 'bg-gradient-to-tr from-primary to-[#005e16] text-white scale-115 border-2 border-white ring-4 ring-primary/35 shadow-lg shadow-primary/30 animate-pulse-slow'
-                          : 'bg-white border-2 border-dashed border-outline-variant text-on-surface-variant/70 hover:bg-surface-container-low hover:scale-110'
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <Check className="w-4 h-4 text-white stroke-[3]" />
-                    ) : (
-                      <span className="text-xs font-black">{idx + 1}</span>
-                    )}
-                  </div>
-
-                  {/* Horizontal Floating Text Labels next to node circles */}
-                  <div 
-                    className={`absolute top-1/2 -translate-y-1/2 px-3 py-2 rounded-xl whitespace-nowrap leading-tight shadow-md border-y border-x flex flex-col transition-all duration-300 hover:scale-105 ${
-                      node.labelPos === 'right' 
-                        ? 'left-12 items-start text-left border-l-4' 
-                        : 'right-12 items-end text-right border-r-4'
-                    } ${
-                      isCompleted 
-                        ? 'bg-primary/5 text-primary border-primary/25 border-l-primary border-r-primary'
-                        : isActive
-                          ? 'bg-gradient-to-br from-primary to-[#004e13] text-white border-primary shadow-lg shadow-primary/20 border-l-amber-400 border-r-amber-400'
-                          : 'bg-white/90 backdrop-blur-md text-on-surface-variant border-outline-variant/30 border-l-outline-variant border-r-outline-variant'
-                    }`}
-                  >
-                    <span className={`text-[10px] font-black tracking-tight ${isActive ? 'text-white' : 'text-on-surface'}`}>
-                      {node.name}
-                    </span>
-                    {node.targetDate && (
-                      <span className={`text-[8.5px] font-mono font-bold mt-1 px-1.5 py-0.5 rounded-full ${
-                        isActive 
-                          ? 'bg-white/20 text-white' 
-                          : isCompleted 
-                            ? 'bg-primary/10 text-primary' 
-                            : 'bg-surface-container text-on-surface-variant/70'
-                      }`}>
-                        📅 {node.targetDate}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* ROADWAY CONSTRUCTOR PLUS (+) BUTTON - rendered in the middle of the road at the next slot */}
-            {currentPhases.length < 20 && (
-              (() => {
-                const nextSlot = roadSlots[currentPhases.length];
                 return (
-                  <div
-                    className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
-                    style={{
-                      left: `${(nextSlot.x / 400) * 100}%`,
-                      top: `${(nextSlot.y / dynamicHeight) * 100}%`,
-                    }}
+                  <div 
+                    key={phase.id} 
+                    id={`timeline-card-${phase.id}`}
+                    className="relative flex items-center justify-between w-full min-h-[90px] z-10 animate-fade-in"
                   >
-                    <button
-                      type="button"
-                      onClick={handleOpenAddPhase}
-                      className="w-10 h-10 rounded-full bg-white border-2 border-primary text-primary flex items-center justify-center shadow-lg hover:scale-110 active:scale-90 transition-all duration-200 cursor-pointer group hover:bg-primary hover:text-white"
-                      title="Construct Next Stop"
-                    >
-                      <Plus className="w-5 h-5 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
-                    </button>
-                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-black uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 animate-pulse">
-                      {lang === 'ar' ? 'إضافة محطة' : 'Add Goal'}
+                    {/* Left Hand Card Column */}
+                    <div className="w-[44%] flex justify-end">
+                      {isLeft && (
+                        <div 
+                          onClick={handleNodeClick}
+                          className={`w-full p-3.5 rounded-2xl border transition-all duration-300 hover:scale-103 active:scale-98 cursor-pointer relative shadow-sm hover:shadow-md ${
+                            isCompleted 
+                              ? 'bg-primary/5 text-primary border-primary/20 border-r-4 border-r-primary'
+                              : isActive
+                                ? 'bg-gradient-to-br from-primary to-[#004e13] text-white border-primary shadow-lg shadow-primary/20 border-r-4 border-r-amber-400'
+                                : 'bg-white text-on-surface-variant border-outline-variant/30 border-r-4 border-r-outline-variant'
+                          }`}
+                        >
+                          <h3 className={`text-xs font-black tracking-tight ${isActive ? 'text-white' : 'text-on-surface'}`}>{name}</h3>
+                          
+                          <span className={`text-[8.5px] font-mono font-black mt-1 px-2 py-0.5 rounded-full inline-block ${
+                            isActive ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+                          }`}>
+                            📅 {phase.targetDate}
+                          </span>
+                          
+                          {/* Mini Progress */}
+                          <div className="mt-2.5 space-y-1">
+                            <div className="flex justify-between text-[7px] font-black uppercase opacity-85">
+                              <span>{lang === 'ar' ? 'المنفق:' : 'Spent:'}</span>
+                              <span className="font-mono">{spent.toLocaleString()} / {budget.toLocaleString()} SAR</span>
+                            </div>
+                            <div className={`w-full h-1 rounded-full overflow-hidden ${isActive ? 'bg-white/25' : 'bg-surface-container'}`}>
+                              <div 
+                                className={`h-full rounded-full ${isActive ? 'bg-white' : 'bg-primary'}`}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
+
+                    {/* Center Node Column */}
+                    <div className="w-[10%] flex justify-center relative">
+                      <div 
+                        onClick={handleNodeClick}
+                        className={`w-8.5 h-8.5 rounded-full flex items-center justify-center transition-all duration-300 z-10 cursor-pointer shadow-md ${
+                          isCompleted 
+                            ? 'bg-primary border-2 border-amber-500/25 text-white hover:scale-110 shadow-primary/10'
+                            : isActive
+                              ? 'bg-gradient-to-tr from-primary to-[#005e16] text-white scale-110 border-2 border-white ring-4 ring-primary/35 shadow-lg shadow-primary/30'
+                              : 'bg-white border-2 border-dashed border-outline-variant text-on-surface-variant/60 hover:bg-surface-container-low hover:scale-110'
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <Check className="w-3.5 h-3.5 text-white stroke-[3.5]" />
+                        ) : (
+                          <span className="text-xs font-black">{idx + 1}</span>
+                        )}
+                      </div>
+
+                      {/* Companion mascot floating on top of the active center node */}
+                      {isActive && (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none w-14 h-14">
+                          <div className="absolute inset-0 bg-gradient-to-tr from-primary to-amber-400 opacity-20 blur-lg rounded-full scale-100 animate-pulse" />
+                          <AvatarImage 
+                            avatarId={settings.avatarId || 'green'} 
+                            className="w-full h-full object-contain drop-shadow-xl animate-bounce-slow" 
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right Hand Card Column */}
+                    <div className="w-[44%] flex justify-start">
+                      {!isLeft && (
+                        <div 
+                          onClick={handleNodeClick}
+                          className={`w-full p-3.5 rounded-2xl border transition-all duration-300 hover:scale-103 active:scale-98 cursor-pointer relative shadow-sm hover:shadow-md ${
+                            isCompleted 
+                              ? 'bg-primary/5 text-primary border-primary/20 border-l-4 border-l-primary'
+                              : isActive
+                                ? 'bg-gradient-to-br from-primary to-[#004e13] text-white border-primary shadow-lg shadow-primary/20 border-l-4 border-l-amber-400'
+                                : 'bg-white text-on-surface-variant border-outline-variant/30 border-l-4 border-l-outline-variant'
+                          }`}
+                        >
+                          <h3 className={`text-xs font-black tracking-tight ${isActive ? 'text-white' : 'text-on-surface'}`}>{name}</h3>
+                          
+                          <span className={`text-[8.5px] font-mono font-black mt-1 px-2 py-0.5 rounded-full inline-block ${
+                            isActive ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'
+                          }`}>
+                            📅 {phase.targetDate}
+                          </span>
+                          
+                          {/* Mini Progress */}
+                          <div className="mt-2.5 space-y-1">
+                            <div className="flex justify-between text-[7px] font-black uppercase opacity-85">
+                              <span>{lang === 'ar' ? 'المنفق:' : 'Spent:'}</span>
+                              <span className="font-mono">{spent.toLocaleString()} / {budget.toLocaleString()} SAR</span>
+                            </div>
+                            <div className={`w-full h-1 rounded-full overflow-hidden ${isActive ? 'bg-white/25' : 'bg-surface-container'}`}>
+                              <div 
+                                className={`h-full rounded-full ${isActive ? 'bg-white' : 'bg-primary'}`}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                   </div>
                 );
-              })()
-            )}
-
-            {/* SIMSIM MASCOT ICON OVERLAY - physically riding on top of active stop */}
-            <div 
-              className="absolute -translate-x-1/2 z-30 transition-all duration-700 ease-out pointer-events-none"
-              style={{
-                left: `${(activeNode.x / 400) * 100}%`,
-                top: `${(activeNode.y / dynamicHeight) * 100}%`,
-                transform: 'translate(-50%, -100%) translateY(-22px)', // offset directly above active stop circle
-              }}
-            >
-              <div className="relative group cursor-pointer" onClick={() => setSelectedPhaseDetailId(activeNode.id)}>
-                {/* Glowing warm yellow-green aura pulsing under the mascot */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary to-amber-400 opacity-25 blur-xl rounded-full scale-100 animate-pulse" />
-                
-                {/* Mascot sprite */}
-                <AvatarImage 
-                  avatarId={settings.avatarId || 'green'} 
-                  className="w-16 h-16 relative z-10 drop-shadow-xl animate-bounce-slow" 
-                />
-              </div>
+              })}
             </div>
+
+            {/* ROADWAY CONSTRUCTOR PLUS (+) BUTTON - rendered centered at the bottom of the timeline */}
+            {currentPhases.length < 20 && (
+              <div className="flex justify-center pt-8 pb-3 z-10 relative">
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenAddPhase}
+                    className="w-11 h-11 rounded-full bg-white border border-primary/20 text-primary flex items-center justify-center shadow-md hover:bg-primary hover:text-white hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer group"
+                    title="Construct Next Stop"
+                  >
+                    <Plus className="w-5 h-5 stroke-[3] group-hover:rotate-90 transition-transform duration-300" />
+                  </button>
+                  <span className="text-[9px] font-black uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+                    {lang === 'ar' ? 'إضافة محطة هدف' : 'Add Stop'}
+                  </span>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>
