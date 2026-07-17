@@ -164,6 +164,14 @@ export default function OnboardingView({ onComplete }: OnboardingViewProps) {
     setLocalPhases(localPhases.map(p => p.id === phaseId ? { ...p, allocatedBudget: val } : p));
   };
 
+  const handleNameChange = (phaseId: string, newName: string) => {
+    setLocalPhases(localPhases.map(p => p.id === phaseId ? { ...p, name: newName } : p));
+  };
+
+  const handleDateChange = (phaseId: string, newDate: string) => {
+    setLocalPhases(localPhases.map(p => p.id === phaseId ? { ...p, targetDate: newDate } : p));
+  };
+
   const handleDeleteLocalPhase = (phaseId: string) => {
     setLocalPhases(localPhases.filter(p => p.id !== phaseId));
   };
@@ -543,14 +551,26 @@ export default function OnboardingView({ onComplete }: OnboardingViewProps) {
                 <div key={phase.id} className="p-3 bg-surface-container-low/60 border border-outline-variant/20 rounded-xl space-y-2 relative">
                   
                   {/* Phase header details */}
-                  <div className="flex justify-between items-start pr-8 pl-1">
-                    <div>
-                      <h4 className="text-xs font-black text-on-surface">{phase.name}</h4>
-                      <p className="text-[9px] text-on-surface-variant/80 font-normal leading-tight line-clamp-1 mt-0.5">{phase.description}</p>
+                  <div className="flex justify-between items-start gap-4 pr-8 pl-1">
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <input
+                        type="text"
+                        value={phase.name}
+                        onChange={(e) => handleNameChange(phase.id, e.target.value)}
+                        className="bg-transparent border-b border-dashed border-outline-variant/60 hover:border-primary focus:border-primary focus:outline-none text-xs font-black text-on-surface w-full py-0.5"
+                        placeholder={language === 'ar' ? 'اسم المرحلة' : 'Phase Name'}
+                      />
+                      <p className="text-[9px] text-on-surface-variant/60 font-medium leading-tight line-clamp-1">{phase.description}</p>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="text-right shrink-0 space-y-1.5">
                       <span className="text-xs font-black text-primary block">{phase.allocatedBudget.toLocaleString()} SAR</span>
-                      <span className="text-[8px] text-on-surface-variant/50 font-mono mt-0.5 block">{phase.targetDate}</span>
+                      <input
+                        type="date"
+                        min={todayStr}
+                        value={phase.targetDate}
+                        onChange={(e) => handleDateChange(phase.id, e.target.value)}
+                        className="bg-surface-container-high/40 text-[9px] text-on-surface-variant/70 font-bold font-mono border border-outline-variant/30 rounded-md px-1.5 py-0.5 focus:outline-none focus:border-primary text-right cursor-pointer"
+                      />
                     </div>
                   </div>
 

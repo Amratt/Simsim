@@ -168,7 +168,8 @@ export default function TheOasis({
       x: slot.x,
       y: slot.y,
       labelPos: slot.labelPos,
-      num: idx + 1
+      num: idx + 1,
+      targetDate: phase.targetDate
     };
   });
 
@@ -542,10 +543,10 @@ export default function TheOasis({
 
                   {/* Horizontal Floating Text Labels next to node circles */}
                   <div 
-                    className={`absolute top-1/2 -translate-y-1/2 px-2 py-0.5 rounded-md whitespace-nowrap text-2xs font-bold leading-normal shadow-sm border ${
+                    className={`absolute top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg whitespace-nowrap leading-tight shadow-sm border flex flex-col ${
                       node.labelPos === 'right' 
-                        ? 'left-11 text-left' 
-                        : 'right-11 text-right'
+                        ? 'left-11 items-start text-left' 
+                        : 'right-11 items-end text-right'
                     } ${
                       isCompleted 
                         ? 'bg-primary/5 text-primary border-primary/10'
@@ -554,7 +555,14 @@ export default function TheOasis({
                           : 'bg-white/80 text-on-surface-variant border-outline-variant/30'
                     }`}
                   >
-                    {node.name}
+                    <span className="text-2xs font-black">{node.name}</span>
+                    {node.targetDate && (
+                      <span className={`text-[8px] font-mono font-bold mt-0.5 ${
+                        isActive ? 'text-white/80' : 'text-on-surface-variant/60'
+                      }`}>
+                        {node.targetDate}
+                      </span>
+                    )}
                   </div>
                 </div>
               );
