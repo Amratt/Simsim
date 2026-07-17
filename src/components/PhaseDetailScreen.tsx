@@ -271,7 +271,7 @@ export default function PhaseDetailScreen({
           onClick={onClose}
           className="flex items-center gap-2 px-3.5 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer shadow-sm"
         >
-          <ChevronLeft className="w-4 h-4 stroke-[2.5]" /> {lang === 'ar' ? 'العودة إلى الواحة' : 'Back to The Oasis'}
+          <ChevronLeft className="w-4 h-4 stroke-[2.5]" /> {lang === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
         </button>
       </div>
 

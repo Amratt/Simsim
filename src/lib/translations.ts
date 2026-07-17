@@ -3,8 +3,8 @@ export type Language = 'en' | 'ar';
 export const TRANSLATIONS = {
   // Navigation
   oasis: {
-    en: 'The Oasis',
-    ar: 'الواحة',
+    en: 'Home',
+    ar: 'الرئيسية',
   },
   analytics: {
     en: 'Analytics',
@@ -77,8 +77,8 @@ export const TRANSLATIONS = {
     ar: 'متابعة الإعداد',
   },
   buildOasisPath: {
-    en: 'Build My Oasis Path',
-    ar: 'أنشئ مسار واحتنا',
+    en: 'Build My Path',
+    ar: 'أنشئ مسار رحلتنا',
   },
   back: {
     en: 'Back',
@@ -105,8 +105,8 @@ export const TRANSLATIONS = {
     ar: '💰 يرجى تحديد ميزانية معقولة للبدء.',
   },
   footerOrnament: {
-    en: 'Simsim Oasis — Hand-crafted wedding companion',
-    ar: 'واحة سمسم — رفيق التخطيط المصمم بحب',
+    en: 'Simsim — Hand-crafted wedding companion',
+    ar: 'سمسم — رفيق التخطيط المصمم بحب',
   },
 
   // Main screen/app bar

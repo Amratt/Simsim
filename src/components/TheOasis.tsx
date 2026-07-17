@@ -345,7 +345,7 @@ export default function TheOasis({
       <section className="mb-10 relative z-10 flex flex-col items-center w-full">
         <div className="text-center mb-4">
           <h2 className="font-plus text-2xl font-black text-on-surface">
-            {lang === 'ar' ? 'خارطة طريق الواحة' : 'The Oasis Roadmap'}
+            {lang === 'ar' ? 'مسار الزفاف' : 'The Wedding Roadmap'}
           </h2>
           <p className="text-xs text-on-surface-variant font-medium mt-1">
             {lang === 'ar' ? 'انقر على أي محطة بالأسفل لمراجعة تفاصيل أهداف التخطيط' : 'Click a stop below to details-audit milestones'}
@@ -631,7 +631,7 @@ export default function TheOasis({
                   {lang === 'ar' ? 'إنشاء محطة هدف جديدة' : 'Construct Goal Stop'}
                 </h3>
                 <p className="text-[9px] uppercase tracking-widest font-black text-primary">
-                  {lang === 'ar' ? 'صانع مسار الواحة' : 'The Oasis Road Builder'}
+                  {lang === 'ar' ? 'صانع مسار الرحلة' : 'The Path Builder'}
                 </p>
               </div>
             </div>
