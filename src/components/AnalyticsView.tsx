@@ -65,10 +65,8 @@ export default function AnalyticsView({
     return true; // 'planned' shows all assigned targets
   });
 
-  // Global maths based on Completed milestones
-  const totalSpent = milestones
-    .filter(m => m.status === 'completed')
-    .reduce((sum, m) => sum + m.targetAmount, 0);
+  // Global maths based on actual transaction expenses
+  const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalBudget = settings.budgetLimit;
   const totalRemaining = Math.max(0, totalBudget - totalSpent);
   const spendPercent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
@@ -103,9 +101,9 @@ export default function AnalyticsView({
   const phaseStats = currentPhases.map((phase, idx) => {
     const budget = phase.allocatedBudget !== undefined ? phase.allocatedBudget : (phaseDefaultBudgets[phase.id] || 10000);
     const phaseMilestones = milestones.filter(m => m.phaseId === phase.id);
-    const spent = phaseMilestones
-      .filter(m => m.status === 'completed')
-      .reduce((sum, m) => sum + m.targetAmount, 0);
+    const spent = expenses
+      .filter(e => e.phaseId === phase.id)
+      .reduce((sum, e) => sum + e.amount, 0);
     const completedM = phaseMilestones.filter(m => m.status === 'completed').length;
 
     const spentPercent = budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : 0;
