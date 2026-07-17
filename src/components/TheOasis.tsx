@@ -464,14 +464,26 @@ export default function TheOasis({
           onSelectPhase={(phaseId) => setSelectedPhaseDetailId(phaseId)}
         />
 
-        {/* Scrollable Container Wrapper */}
+        {/* Scrollable Container Wrapper with beautiful Off-white Canvas background and botanical hints */}
         <div 
           ref={scrollContainerRef}
-          className="w-full max-w-sm h-[580px] max-h-[620px] overflow-y-auto pr-1 border border-primary/10 rounded-3xl bg-white/40 backdrop-blur-sm relative shadow-inner p-4 scroll-smooth"
+          className="w-full max-w-sm h-[580px] max-h-[620px] overflow-y-auto pr-1 border border-primary/15 rounded-3xl bg-[#FAF9F5] relative shadow-inner p-4 scroll-smooth scrollbar-none"
         >
+          {/* Subtle background botanical vector ornaments to feel artistic */}
+          <div className="absolute top-4 left-4 opacity-[0.03] text-primary pointer-events-none select-none">
+            <svg className="w-20 h-20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17,8C8,20 4,21 3,21C3,21 6.5,15.5 13.5,9C16.5,6.2 19,4 21,3C21,3 20.2,5.2 17,8M12.2,11.3C7.5,16.5 5.5,17 5,17C5,17 7.2,13 10.8,9.5C12.3,8.1 13.7,7 14.7,6.3C14.7,6.3 14.1,8.3 12.2,11.3M8.8,14C5.8,17 4.8,17.2 4.5,17.2C4.5,17.2 6,14.5 8.2,12.2C9,11.4 9.8,10.7 10.3,10.3C10.3,10.3 10.1,11.8 8.8,14Z" />
+            </svg>
+          </div>
+          <div className="absolute bottom-4 right-4 opacity-[0.03] text-primary pointer-events-none select-none">
+            <svg className="w-24 h-24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17,8C8,20 4,21 3,21C3,21 6.5,15.5 13.5,9C16.5,6.2 19,4 21,3C21,3 20.2,5.2 17,8M12.2,11.3C7.5,16.5 5.5,17 5,17C5,17 7.2,13 10.8,9.5C12.3,8.1 13.7,7 14.7,6.3C14.7,6.3 14.1,8.3 12.2,11.3M8.8,14C5.8,17 4.8,17.2 4.5,17.2C4.5,17.2 6,14.5 8.2,12.2C9,11.4 9.8,10.7 10.3,10.3C10.3,10.3 10.1,11.8 8.8,14Z" transform="scale(-1, 1) translate(-24, 0)" />
+            </svg>
+          </div>
+
           {/* Desert Path SVG & Floating Cards Container */}
           <div 
-            className="relative w-full max-w-sm select-none shrink-0"
+            className="relative w-full max-w-sm select-none shrink-0 z-10"
             style={{ height: `${dynamicHeight}px` }}
           >
             <svg 
@@ -481,15 +493,35 @@ export default function TheOasis({
               xmlns="http://www.w3.org/2000/svg"
               style={{ height: `${dynamicHeight}px` }}
             >
-              {/* Main sandy path background - grows dynamically */}
+              {/* Layer 1: Thick green glow shadow path under everything */}
               <path 
                 d={getPathString(currentPhases.length, currentPhases.length < 20)} 
-                stroke="#ece7dc" 
+                stroke="rgba(0, 110, 28, 0.04)" 
                 strokeLinecap="round" 
-                strokeWidth="28"
+                strokeWidth="36"
                 className="transition-all duration-500 ease-out"
               />
-              {/* Progressive dark green trail representing current path completion */}
+
+              {/* Layer 2: Main sandy path background - grows dynamically */}
+              <path 
+                d={getPathString(currentPhases.length, currentPhases.length < 20)} 
+                stroke="#EAE6DF" 
+                strokeLinecap="round" 
+                strokeWidth="20"
+                className="transition-all duration-500 ease-out"
+              />
+
+              {/* Layer 3: Subtle golden guide thread along the main road */}
+              <path 
+                d={getPathString(currentPhases.length, currentPhases.length < 20)} 
+                stroke="#b18129" 
+                strokeLinecap="round" 
+                strokeWidth="1.5"
+                strokeDasharray="5 5"
+                className="transition-all duration-500 ease-out opacity-40"
+              />
+
+              {/* Progressive active thick forest green trail */}
               <path 
                 className="quest-path transition-all duration-700 ease-out" 
                 d={getPathString(currentPhases.length, false)} 
@@ -499,6 +531,21 @@ export default function TheOasis({
                 style={{
                   strokeDasharray: '10000',
                   strokeDashoffset: `${10000 - ((activeIndex + 1) / currentPhases.length) * 10000}`
+                }}
+              />
+
+              {/* Superimposed active glowing golden dash-line thread */}
+              <path 
+                className="quest-path transition-all duration-700 ease-out" 
+                d={getPathString(currentPhases.length, false)} 
+                stroke="#f1c40f" 
+                strokeLinecap="round" 
+                strokeWidth="1.5"
+                strokeDasharray="6 4"
+                style={{
+                  strokeDasharray: '10000',
+                  strokeDashoffset: `${10000 - ((activeIndex + 1) / currentPhases.length) * 10000}`,
+                  opacity: 0.8
                 }}
               />
             </svg>
@@ -526,41 +573,47 @@ export default function TheOasis({
                 >
                   {/* Visual Circle Node Button */}
                   <div 
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${
                       isCompleted 
-                        ? 'bg-primary border border-primary text-white hover:scale-105'
+                        ? 'bg-primary border-2 border-amber-500/25 text-white hover:scale-110 shadow-primary/10'
                         : isActive
-                          ? 'bg-white border-[3.5px] border-primary text-primary scale-110 ring-4 ring-primary/20 hover:scale-115'
-                          : 'bg-[#eeeeee] border-2 border-[#b0b0b0] text-[#717171] hover:bg-[#e4e4e4]'
+                          ? 'bg-gradient-to-tr from-primary to-[#005e16] text-white scale-115 border-2 border-white ring-4 ring-primary/35 shadow-lg shadow-primary/30 animate-pulse-slow'
+                          : 'bg-white border-2 border-dashed border-outline-variant text-on-surface-variant/70 hover:bg-surface-container-low hover:scale-110'
                     }`}
                   >
                     {isCompleted ? (
-                      <Check className="w-4 h-4 text-white stroke-[2.5]" />
+                      <Check className="w-4 h-4 text-white stroke-[3]" />
                     ) : (
-                      <span className="text-[11px] font-black">{idx + 1}</span>
+                      <span className="text-xs font-black">{idx + 1}</span>
                     )}
                   </div>
 
                   {/* Horizontal Floating Text Labels next to node circles */}
                   <div 
-                    className={`absolute top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg whitespace-nowrap leading-tight shadow-sm border flex flex-col ${
+                    className={`absolute top-1/2 -translate-y-1/2 px-3 py-2 rounded-xl whitespace-nowrap leading-tight shadow-md border-y border-x flex flex-col transition-all duration-300 hover:scale-105 ${
                       node.labelPos === 'right' 
-                        ? 'left-11 items-start text-left' 
-                        : 'right-11 items-end text-right'
+                        ? 'left-12 items-start text-left border-l-4' 
+                        : 'right-12 items-end text-right border-r-4'
                     } ${
                       isCompleted 
-                        ? 'bg-primary/5 text-primary border-primary/10'
+                        ? 'bg-primary/5 text-primary border-primary/25 border-l-primary border-r-primary'
                         : isActive
-                          ? 'bg-primary text-white border-primary'
-                          : 'bg-white/80 text-on-surface-variant border-outline-variant/30'
+                          ? 'bg-gradient-to-br from-primary to-[#004e13] text-white border-primary shadow-lg shadow-primary/20 border-l-amber-400 border-r-amber-400'
+                          : 'bg-white/90 backdrop-blur-md text-on-surface-variant border-outline-variant/30 border-l-outline-variant border-r-outline-variant'
                     }`}
                   >
-                    <span className="text-2xs font-black">{node.name}</span>
+                    <span className={`text-[10px] font-black tracking-tight ${isActive ? 'text-white' : 'text-on-surface'}`}>
+                      {node.name}
+                    </span>
                     {node.targetDate && (
-                      <span className={`text-[8px] font-mono font-bold mt-0.5 ${
-                        isActive ? 'text-white/80' : 'text-on-surface-variant/60'
+                      <span className={`text-[8.5px] font-mono font-bold mt-1 px-1.5 py-0.5 rounded-full ${
+                        isActive 
+                          ? 'bg-white/20 text-white' 
+                          : isCompleted 
+                            ? 'bg-primary/10 text-primary' 
+                            : 'bg-surface-container text-on-surface-variant/70'
                       }`}>
-                        {node.targetDate}
+                        📅 {node.targetDate}
                       </span>
                     )}
                   </div>
@@ -598,7 +651,7 @@ export default function TheOasis({
 
             {/* SIMSIM MASCOT ICON OVERLAY - physically riding on top of active stop */}
             <div 
-              className="absolute -translate-x-1/2 z-30 transition-all duration-700 ease-out"
+              className="absolute -translate-x-1/2 z-30 transition-all duration-700 ease-out pointer-events-none"
               style={{
                 left: `${(activeNode.x / 400) * 100}%`,
                 top: `${(activeNode.y / dynamicHeight) * 100}%`,
@@ -606,7 +659,8 @@ export default function TheOasis({
               }}
             >
               <div className="relative group cursor-pointer" onClick={() => setSelectedPhaseDetailId(activeNode.id)}>
-                <div className="absolute inset-0 bg-primary/15 blur-xl rounded-full scale-75 animate-pulse" />
+                {/* Glowing warm yellow-green aura pulsing under the mascot */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary to-amber-400 opacity-25 blur-xl rounded-full scale-100 animate-pulse" />
                 
                 {/* Mascot sprite */}
                 <AvatarImage 
