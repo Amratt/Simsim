@@ -738,6 +738,7 @@ export default function TheOasis({
       {/* RENDER DYNAMIC ROUTED DETAIL SCREEN (MODAL LAYER PORTED DIRECTLY OVER ROADMAP VIEW) */}
       {selectedPhaseDetailId && (
         <PhaseDetailScreen
+          key={`${selectedPhaseDetailId}_${JSON.stringify(settings.phases?.find(p => p.id === selectedPhaseDetailId))}`}
           phaseId={selectedPhaseDetailId}
           settings={settings}
           milestones={milestones}

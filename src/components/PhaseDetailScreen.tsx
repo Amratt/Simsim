@@ -261,7 +261,10 @@ export default function PhaseDetailScreen({
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col items-center" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
       
       {/* Sticky Top Header Bar */}
-      <div className="w-full max-w-md bg-background/95 backdrop-blur-sm border-b border-outline-variant/30 px-6 py-4 flex justify-between items-center z-20 shrink-0 shadow-sm">
+      <div 
+        className="w-full max-w-md bg-background/95 backdrop-blur-sm border-b border-outline-variant/30 px-6 pb-4 flex justify-between items-center z-20 shrink-0 shadow-sm"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 12px)' }}
+      >
         <button 
           type="button"
           onClick={onClose}
