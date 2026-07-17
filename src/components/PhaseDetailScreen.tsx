@@ -262,8 +262,8 @@ export default function PhaseDetailScreen({
       
       {/* Sticky Top Header Bar */}
       <div 
-        className="w-full max-w-md bg-background/95 backdrop-blur-sm border-b border-outline-variant/30 px-6 pb-4 flex justify-between items-center z-20 shrink-0 shadow-sm"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 12px)' }}
+        className="w-full max-w-md bg-background/95 backdrop-blur-sm border-b border-outline-variant/30 px-6 pb-4 flex items-center justify-start z-20 shrink-0 shadow-sm"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 20px)' }}
       >
         <button 
           type="button"
@@ -272,22 +272,6 @@ export default function PhaseDetailScreen({
         >
           <ChevronLeft className="w-4 h-4 stroke-[2.5]" /> {lang === 'ar' ? 'العودة إلى الواحة' : 'Back to The Oasis'}
         </button>
-        
-        <div className="flex items-center gap-2">
-          {!isActive ? (
-            <button
-              type="button"
-              onClick={() => onSetAsActivePhase(phaseId)}
-              className="text-[10px] uppercase font-black tracking-wider bg-outline-variant/30 text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-primary/20 hover:text-primary transition-all active:scale-95 cursor-pointer"
-            >
-              {lang === 'ar' ? 'تحديد كمرحلة نشطة 🐢' : 'Set Active Phase 🐢'}
-            </button>
-          ) : (
-            <span className="text-[10px] uppercase font-black tracking-widest bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-full flex items-center gap-1 animate-pulse">
-              <Check className="w-3 h-3" /> {lang === 'ar' ? 'المرحلة النشطة' : 'Active Stage'}
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Scrollable Content Container */}
