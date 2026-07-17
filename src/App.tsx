@@ -20,6 +20,7 @@ import AnalyticsView from './components/AnalyticsView';
 import SettingsView from './components/SettingsView';
 import AddExpenseModal from './components/AddExpenseModal';
 import OnboardingView from './components/OnboardingView';
+import SplashScreen from './components/SplashScreen';
 
 export default function App() {
   // Global States
@@ -27,11 +28,31 @@ export default function App() {
   const [milestones, setMilestones] = useState<Milestone[]>(loadMilestones);
   const [expenses, setExpenses] = useState<Expense[]>(loadExpenses);
 
+  // Splash Screen States
+  const [isSplashActive, setIsSplashActive] = useState<boolean>(true);
+  const [isSplashFading, setIsSplashFading] = useState<boolean>(false);
+
   // Tab routing: oasis, analytics, settings (exactly 3 options)
   const [activeTab, setActiveTab] = useState<string>('oasis');
   
   // Modal visibility
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState<boolean>(false);
+
+  // Splash timer effect
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => {
+      setIsSplashFading(true);
+    }, 1800);
+
+    const unmountTimer = setTimeout(() => {
+      setIsSplashActive(false);
+    }, 2200);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(unmountTimer);
+    };
+  }, []);
 
   // Auto-synchronize storage upon state updates
   useEffect(() => {
@@ -45,6 +66,11 @@ export default function App() {
   useEffect(() => {
     saveExpenses(expenses);
   }, [expenses]);
+
+  // Render Splash Screen if active, blocking everything else
+  if (isSplashActive) {
+    return <SplashScreen isFading={isSplashFading} language={settings.language} />;
+  }
 
   // Trap and render exclusively Onboarding View when not onboarded
   if (!settings.isOnboarded) {

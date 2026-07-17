@@ -17,6 +17,7 @@ import { Expense, Milestone, WeddingSettings } from '../types';
 import { t, translatePhaseName, translatePhaseDesc, translateMilestoneName } from '../lib/translations';
 
 interface PhaseDetailScreenProps {
+  key?: string;
   phaseId: string;
   settings: WeddingSettings;
   milestones: Milestone[];
