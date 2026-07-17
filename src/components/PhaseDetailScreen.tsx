@@ -28,6 +28,7 @@ interface PhaseDetailScreenProps {
   onUpdateMilestone: (updated: Milestone) => void;
   onDeleteMilestone: (id: string) => void;
   onDeleteExpense: (id: string) => void;
+  onDeletePhase: (id: string) => void;
   onUpdatePhaseBudget?: (
     phaseId: string, 
     name: string, 
@@ -70,6 +71,7 @@ export default function PhaseDetailScreen({
   onUpdateMilestone,
   onDeleteMilestone,
   onDeleteExpense,
+  onDeletePhase,
   onUpdatePhaseBudget,
 }: PhaseDetailScreenProps) {
   const lang = settings.language || 'en';
@@ -176,6 +178,17 @@ export default function PhaseDetailScreen({
       );
     }
     setIsEditingMeta(false);
+  };
+
+  const handleDeletePhaseClick = () => {
+    const message = lang === 'ar' 
+      ? `⚠️ هل أنت متأكد من حذف مرحلة "${info.name}" بالكامل؟\nسيتم حذف جميع الأهداف والمصاريف المرتبطة بها نهائياً ولا يمكن التراجع عن هذا الإجراء.`
+      : `⚠️ Are you sure you want to delete the entire phase "${info.name}"?\nAll associated milestones and expenses will be permanently deleted. This action cannot be undone.`;
+    
+    if (window.confirm(message)) {
+      onDeletePhase(phaseId);
+      onClose();
+    }
   };
 
   // Track state for creating milestone
@@ -355,21 +368,30 @@ export default function PhaseDetailScreen({
                   required
                 />
               </div>
-              <div className="flex gap-2 justify-end pt-1">
+              <div className="flex gap-2 justify-between pt-1 border-t border-outline-variant/10 mt-2">
                 <button
                   type="button"
-                  onClick={() => setIsEditingMeta(false)}
-                  className="px-3 py-1.5 bg-outline-variant/20 hover:bg-outline-variant/30 text-on-surface-variant rounded-lg text-2xs font-extrabold uppercase cursor-pointer"
+                  onClick={handleDeletePhaseClick}
+                  className="px-3 py-1.5 bg-error/10 hover:bg-error/20 text-error rounded-lg text-2xs font-extrabold uppercase cursor-pointer flex items-center gap-1"
                 >
-                  {t('cancel', lang)}
+                  <Trash2 className="w-3.5 h-3.5" /> {lang === 'ar' ? 'حذف المرحلة' : 'Delete'}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSaveMetaEdit}
-                  className="px-3 py-1.5 bg-primary text-white rounded-lg text-2xs font-extrabold uppercase shadow-sm cursor-pointer"
-                >
-                  {t('save', lang)}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingMeta(false)}
+                    className="px-3 py-1.5 bg-outline-variant/20 hover:bg-outline-variant/30 text-on-surface-variant rounded-lg text-2xs font-extrabold uppercase cursor-pointer"
+                  >
+                    {t('cancel', lang)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveMetaEdit}
+                    className="px-3 py-1.5 bg-primary text-white rounded-lg text-2xs font-extrabold uppercase shadow-sm cursor-pointer"
+                  >
+                    {t('save', lang)}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (

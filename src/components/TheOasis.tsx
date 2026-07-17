@@ -30,6 +30,7 @@ interface TheOasisProps {
   onUpdateMilestone: (updated: Milestone) => void;
   onDeleteMilestone: (id: string) => void;
   onDeleteExpense: (id: string) => void;
+  onDeletePhase: (id: string) => void;
 }
 
 // Logical suggestions sequence
@@ -51,7 +52,8 @@ export default function TheOasis({
   onAddMilestone,
   onUpdateMilestone,
   onDeleteMilestone,
-  onDeleteExpense
+  onDeleteExpense,
+  onDeletePhase
 }: TheOasisProps) {
   
   // Local state to track which phase detail screen is modal-open (null if closed)
@@ -743,6 +745,7 @@ export default function TheOasis({
           onUpdateMilestone={onUpdateMilestone}
           onDeleteMilestone={onDeleteMilestone}
           onDeleteExpense={onDeleteExpense}
+          onDeletePhase={onDeletePhase}
           onUpdatePhaseBudget={handleUpdatePhaseDetails}
         />
       )}
