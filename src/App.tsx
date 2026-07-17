@@ -213,6 +213,36 @@ export default function App() {
     setMilestones(milestones.filter(m => m.id !== id));
   };
 
+  // Handler: Delete recorded expense
+  const handleDeleteExpense = (expenseId: string) => {
+    const nextExpenses = expenses.filter(e => e.id !== expenseId);
+    setExpenses(nextExpenses);
+
+    const deletedExpense = expenses.find(e => e.id === expenseId);
+    if (deletedExpense) {
+      const category = deletedExpense.category;
+      const mappedToCategory = nextExpenses.filter(e => e.category === category);
+      const sumPaid = mappedToCategory.reduce((sum, e) => sum + e.amount, 0);
+
+      const updatedMilestones = milestones.map(m => {
+        if (m.category === category) {
+          let nextStatus: Milestone['status'] = m.status;
+          if (sumPaid >= m.targetAmount) {
+            nextStatus = 'completed';
+          } else {
+            nextStatus = 'planning';
+          }
+          return {
+            ...m,
+            status: nextStatus,
+          };
+        }
+        return m;
+      });
+      setMilestones(updatedMilestones);
+    }
+  };
+
   // Handler: Completely reset back to pristine demo defaults
   const handleResetApp = () => {
     setSettings(DEFAULT_SETTINGS);
@@ -253,6 +283,7 @@ export default function App() {
             onAddMilestone={handleAddMilestone}
             onUpdateMilestone={handleUpdateMilestone}
             onDeleteMilestone={handleDeleteMilestone}
+            onDeleteExpense={handleDeleteExpense}
           />
         );
       case 'analytics':
@@ -285,6 +316,7 @@ export default function App() {
             onAddMilestone={handleAddMilestone}
             onUpdateMilestone={handleUpdateMilestone}
             onDeleteMilestone={handleDeleteMilestone}
+            onDeleteExpense={handleDeleteExpense}
           />
         );
     }

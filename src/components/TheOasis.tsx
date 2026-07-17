@@ -29,6 +29,7 @@ interface TheOasisProps {
   onAddMilestone: (milestone: Omit<Milestone, 'id'>) => void;
   onUpdateMilestone: (updated: Milestone) => void;
   onDeleteMilestone: (id: string) => void;
+  onDeleteExpense: (id: string) => void;
 }
 
 // Logical suggestions sequence
@@ -49,7 +50,8 @@ export default function TheOasis({
   onUpdateSettings,
   onAddMilestone,
   onUpdateMilestone,
-  onDeleteMilestone
+  onDeleteMilestone,
+  onDeleteExpense
 }: TheOasisProps) {
   
   // Local state to track which phase detail screen is modal-open (null if closed)
@@ -217,13 +219,8 @@ export default function TheOasis({
   const activeIndex = computedActiveIndex;
 
   // Dynamic calculations based on Completed and Planned milestone goals
-  const completedSpent = milestones
-    .filter(m => m.status === 'completed')
-    .reduce((sum, m) => sum + m.targetAmount, 0);
-  const plannedSpent = milestones
-    .filter(m => m.status === 'planning')
-    .reduce((sum, m) => sum + m.targetAmount, 0);
-  const totalPlanned = completedSpent + plannedSpent;
+  const completedSpent = expenses.reduce((sum, e) => sum + e.amount, 0); // actual spent
+  const totalPlanned = milestones.reduce((sum, m) => sum + m.targetAmount, 0); // total planned target
   const budgetLimit = settings.budgetLimit;
 
   const completedPercent = budgetLimit > 0 ? Math.min(100, Math.round((completedSpent / budgetLimit) * 100)) : 0;
@@ -750,6 +747,7 @@ export default function TheOasis({
           onAddMilestone={onAddMilestone}
           onUpdateMilestone={onUpdateMilestone}
           onDeleteMilestone={onDeleteMilestone}
+          onDeleteExpense={onDeleteExpense}
           onUpdatePhaseBudget={handleUpdatePhaseDetails}
         />
       )}

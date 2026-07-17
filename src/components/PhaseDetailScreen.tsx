@@ -26,6 +26,7 @@ interface PhaseDetailScreenProps {
   onAddMilestone: (milestone: Omit<Milestone, 'id'>) => void;
   onUpdateMilestone: (updated: Milestone) => void;
   onDeleteMilestone: (id: string) => void;
+  onDeleteExpense: (id: string) => void;
   onUpdatePhaseBudget?: (
     phaseId: string, 
     name: string, 
@@ -67,6 +68,7 @@ export default function PhaseDetailScreen({
   onAddMilestone,
   onUpdateMilestone,
   onDeleteMilestone,
+  onDeleteExpense,
   onUpdatePhaseBudget,
 }: PhaseDetailScreenProps) {
   const lang = settings.language || 'en';
@@ -195,10 +197,10 @@ export default function PhaseDetailScreen({
   // Filtered milestones
   const filteredMilestones = milestones.filter(m => m.phaseId === phaseId);
 
-  // Spent calculation based on milestone completion status
-  const totalSpentInPhase = filteredMilestones
-    .filter(m => m.status === 'completed')
-    .reduce((sum, m) => sum + m.targetAmount, 0);
+  // Spent calculation based on actual transaction logs in this phase
+  const totalSpentInPhase = expenses
+    .filter(e => e.phaseId === phaseId)
+    .reduce((sum, e) => sum + e.amount, 0);
   const remainingPhaseBalance = allocatedBudget - totalSpentInPhase;
 
   const handleCreateMilestone = (e: React.FormEvent) => {
@@ -453,7 +455,7 @@ export default function PhaseDetailScreen({
         {/* Milestones / Goals Section */}
         <div className="mb-6 flex justify-between items-center">
           <h3 className="font-plus text-base font-bold text-on-surface flex items-center gap-1.5">
-            <Icons.Layers className="w-4 h-4 text-secondary" /> {lang === 'ar' ? 'مصروفات وأهداف المرحلة' : 'Phases Expenses'}
+            <Icons.Layers className="w-4 h-4 text-secondary" /> {lang === 'ar' ? 'أهداف المرحلة' : 'Milestone Goals'}
           </h3>
           <button
             type="button"
@@ -464,7 +466,7 @@ export default function PhaseDetailScreen({
               t('cancel', lang)
             ) : (
               <>
-                <Icons.Plus className="w-3.5 h-3.5" /> {lang === 'ar' ? 'إضافة هدف مالي' : 'Add Expense'}
+                <Icons.Plus className="w-3.5 h-3.5" /> {lang === 'ar' ? 'إضافة هدف' : 'Add Goal'}
               </>
             )}
           </button>
@@ -588,21 +590,28 @@ export default function PhaseDetailScreen({
               const isExpanded = expandedId === m.id;
               const isEditing = editingId === m.id;
               
-              const milestoneSpent = m.status === 'completed' ? m.targetAmount : 0;
-              const progressPercent = m.status === 'completed' ? 100 : 0;
+              const milestoneSpent = expenses
+                .filter(e => e.category === m.category)
+                .reduce((sum, e) => sum + e.amount, 0);
+              const progressPercent = m.targetAmount > 0 
+                ? Math.min(100, Math.round((milestoneSpent / m.targetAmount) * 100)) 
+                : 0;
 
               let label = lang === 'ar' ? 'مخطط' : 'planned';
-              let colorClasses = 'bg-secondary/10 text-[#b18129] border-secondary/20';
-              if (m.status === 'completed') {
+              let colorClasses = 'bg-surface-container-high text-on-surface-variant border-outline-variant/30';
+              if (milestoneSpent >= m.targetAmount) {
                 label = lang === 'ar' ? 'مكتمل' : 'completed';
                 colorClasses = 'bg-primary/10 text-primary border-primary/20';
+              } else if (milestoneSpent > 0) {
+                label = lang === 'ar' ? 'قيد التنفيذ' : 'in progress';
+                colorClasses = 'bg-[#b18129]/10 text-[#b18129] border-[#b18129]/20';
               }
 
               return (
                 <div
                   key={m.id}
                   className={`rounded-2xl border p-4 shadow-sm transition-all bg-white relative overflow-hidden flex flex-col ${
-                    m.status === 'completed'
+                    milestoneSpent >= m.targetAmount
                       ? 'border-primary/20 bg-primary/5'
                       : 'border-outline-variant/35'
                   }`}
@@ -704,7 +713,7 @@ export default function PhaseDetailScreen({
                               <>Spent: {milestoneSpent.toLocaleString()} / {m.targetAmount.toLocaleString()} SAR</>
                             )}
                           </span>
-                          <span className={m.status === 'completed' ? 'text-primary' : 'text-on-surface'}>
+                          <span className={milestoneSpent >= m.targetAmount ? 'text-primary' : 'text-on-surface'}>
                             {progressPercent}%
                           </span>
                         </div>
@@ -720,35 +729,55 @@ export default function PhaseDetailScreen({
                       {isExpanded && (
                         <div className="mt-4 pt-3 border-t border-outline-variant/20 flex flex-col gap-2 animate-fade-in text-xs font-semibold">
                           <div className="flex justify-between items-center bg-surface-container-low/50 p-2 rounded-lg text-[11px] text-on-surface-variant mb-1">
-                            <span>{lang === 'ar' ? `الحالة: ${m.status === 'completed' ? 'مكتمل' : 'مخطط'}` : `Status: ${m.status === 'completed' ? 'Completed' : 'Planned'}`}</span>
+                            <span>{lang === 'ar' ? `الحالة: ${milestoneSpent >= m.targetAmount ? 'مكتمل' : 'مخطط'}` : `Status: ${milestoneSpent >= m.targetAmount ? 'Completed' : 'Planned'}`}</span>
                             <span>{lang === 'ar' ? `القيمة المستهدفة: ${m.targetAmount.toLocaleString()} ر.س` : `Target Amount: ${m.targetAmount.toLocaleString()} SAR`}</span>
                           </div>
 
-                          {/* Related transactions detail replaced by status tips */}
-                          <div className="space-y-2">
+                          {/* Related transactions list (Issue 4) */}
+                          <div className="space-y-2 mt-2">
                             <p className="text-[10px] font-black text-on-surface-variant/70 uppercase tracking-widest">
-                              {lang === 'ar' ? 'تفاصيل حالة الميزانية:' : 'Budget Status Details:'}
+                              {lang === 'ar' ? 'المصاريف المسجلة لهذا البند:' : 'Recorded Payments:'}
                             </p>
-                            <div className="p-3 bg-surface-container-lowest/50 border border-outline-variant/20 rounded-xl space-y-1">
-                              <p className="text-xs font-bold text-on-surface">
-                                {m.status === 'completed' ? (
-                                  <span className="text-primary flex items-center gap-1">💍 {lang === 'ar' ? 'مكتمل كلياً' : 'Fully Completed'}</span>
-                                ) : (
-                                  <span className="text-[#b18129] flex items-center gap-1">⏳ {lang === 'ar' ? 'مخطط ومعد' : 'Planned & Setup'}</span>
-                                )}
-                              </p>
-                              <p className="text-[11px] text-on-surface-variant/80 font-normal leading-relaxed">
-                                {m.status === 'completed' ? (
-                                  lang === 'ar'
-                                    ? `ميزانية هذا الهدف (${m.targetAmount.toLocaleString()} ر.س) تم دفعها بالكامل واحتسابها ضمن تقدم زفافكم الكلي.`
-                                    : `The budget for this goal (${m.targetAmount.toLocaleString()} SAR) has been fully completed and applied to your total wedding progress.`
-                                ) : (
-                                  lang === 'ar'
-                                    ? `هذا الهدف قيد التخطيط حالياً. قم بتغيير الحالة إلى "مكتمل" لتسجيل دفع هذا البند وتحديث شريط التقدم بالكامل.`
-                                    : `This goal is currently in planning. Modify the status to "Completed" to fully apply this budget allocation to your progress bar.`
-                                )}
-                              </p>
-                            </div>
+                            {(() => {
+                              const milestoneExpenses = expenses.filter(e => e.category === m.category);
+                              if (milestoneExpenses.length > 0) {
+                                return (
+                                  <div className="space-y-1.5">
+                                    {milestoneExpenses.map(exp => (
+                                      <div key={exp.id} className="flex justify-between items-center bg-white p-2.5 rounded-xl border border-outline-variant/20 shadow-2xs transition-all hover:border-outline-variant">
+                                        <div>
+                                          <p className="text-xs font-bold text-on-surface">
+                                            {exp.note || (lang === 'ar' ? 'دفعة مباشرة' : 'Direct Payment')}
+                                          </p>
+                                          <p className="text-[9px] text-on-surface-variant/70 font-mono mt-0.5">{exp.date}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-xs font-bold text-error">-{exp.amount.toLocaleString()} {t('sar', lang)}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const confirmMsg = lang === 'ar' ? 'هل أنت متأكد من حذف هذه الدفعة؟' : 'Delete this payment?';
+                                              if (window.confirm(confirmMsg)) {
+                                                onDeleteExpense(exp.id);
+                                              }
+                                            }}
+                                            className="p-1 hover:bg-error/10 text-on-surface-variant hover:text-error rounded-md transition-colors cursor-pointer"
+                                            title={lang === 'ar' ? 'حذف الدفعة' : 'Delete Payment'}
+                                          >
+                                            <Icons.Trash2 className="w-3.5 h-3.5" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              }
+                              return (
+                                <p className="text-[10px] italic text-on-surface-variant/50 text-center py-2 bg-surface-container-lowest/50 border border-outline-variant/10 rounded-xl">
+                                  {lang === 'ar' ? 'لا توجد مدفوعات مسجلة بعد' : 'No payments recorded yet'}
+                                </p>
+                              );
+                            })()}
                           </div>
 
                           {/* Action triggers */}
